@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.net.URL;
 
 import javax.swing.JFrame;
@@ -20,8 +21,11 @@ import javax.swing.Timer;
 
 public class Main extends JPanel implements KeyListener, ActionListener, MouseListener {
 	private Player player = new Player();
+	private int prevX;
 	
-
+	private Image Sprite;
+	private AffineTransform tx;
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Main f = new Main();
@@ -31,7 +35,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         
-        
+        prevX = player.getX();
         PointerInfo p = MouseInfo.getPointerInfo();
         Point point = p.getLocation();
         SwingUtilities.convertPointFromScreen(point, getFocusCycleRootAncestor());
@@ -42,7 +46,13 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         else if (point.getX() < 0) player.setX(0);
         else player.setX(525);
         
-        g.fillRect(player.getX(),player.getY(),60,60);
+        if (player.getX() > prevX) player.setFacing("Right");
+        if (player.getX() < prevX) player.setFacing("Left");
+        
+        tx = AffineTransform.getTranslateInstance(player.getX(), 600);
+        if (player.getFacing().equals("Left")) {Sprite = getImage("Resources\\\\jumperFacingLeft.png");}
+        else {Sprite = getImage("Resources\\\\jumperFacingRight.png");}
+		g2.drawImage(Sprite, tx, null);
 	}
 	
 	
