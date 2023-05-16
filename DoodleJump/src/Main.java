@@ -97,20 +97,20 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	Timer t;
-	
+	String[] JFrameNames = {"Doodle Jump","Doodle Jumpero"};
 	
 	
 	public Main() {
     	
-        JFrame f = new JFrame("Doodle Jump");
+        JFrame f = new JFrame(JFrameNames[(int) (Math.random()*JFrameNames.length)]);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.setSize(1617,1140);
+        f.setSize(414,896);
 
         f.add(this);
         f.addMouseListener(this);
         f.addKeyListener(this);
         f.setResizable(false);
-        f.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        //f.setExtendedState(JFrame.MAXIMIZED_BOTH); 
         
         t = new Timer(1, this);
         t.start();
