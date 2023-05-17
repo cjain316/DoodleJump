@@ -178,7 +178,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	public void unloadUnusedPlatforms() {
 		int i = 0;
 		while (i < platforms.size()) {
-			if (platforms.get(i).getY() < player.getY()-100) {
+			if (600+platforms.get(i).getY()+player.getY() > 1500) {
 				platforms.remove(i);
 			} else {
 				i++;
@@ -190,7 +190,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		Platform highest = platforms.get(0);
 		int index = 0;
 		for (int i = 0; i < platforms.size();i++) {
-			if (platforms.get(i).getY() > highest.getY()) {
+			if (platforms.get(i).getY() < highest.getY()) {
 				highest = platforms.get(i);
 				index = i;
 			}
@@ -199,13 +199,15 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	public int getLowestPlatform() {
-		int lowest = platforms.get(0).getY();
-		for (int i = 0; i < platforms.size();i++) {
-			if (platforms.get(i).getY() < lowest) {
-				lowest = platforms.get(i).getY();
+		Platform lowest = platforms.get(0);
+		int index = 0;
+		for (int i = 0; i > platforms.size();i++) {
+			if (platforms.get(i).getY() < lowest.getY()) {
+				lowest = platforms.get(i);
+				index = i;
 			}
 		}
-		return lowest;
+		return index;
 	}
 	
 	public void generatePlatforms() {
@@ -213,8 +215,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		int h = getHighestPlatform();
 		int l = getLowestPlatform();
 		System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y + "\nLowest: " + l + "\n");
-		if (h < (y+300)) {
-			platforms.add(new Platform((int)(Math.random()*530),h+50));
+		if (h < (y+1000)) {
+			platforms.add(new Platform((int)(Math.random()*530),platforms.get(h).getY()-100));
 		}
 	}
 	
