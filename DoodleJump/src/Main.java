@@ -38,6 +38,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	public void paint(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        updatePlatforms();
+        
+        drawBackground(g);
         
         prevX = player.getX();
         PointerInfo p = MouseInfo.getPointerInfo();
@@ -63,10 +66,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
             else {Sprite = getImage("Resources\\\\jumperFacingRight.png");}
     		g2.drawImage(Sprite, tx, null);
         }
-		System.out.println(player.getVy());
+		//System.out.println(player.getVy());
         
         
-		for (int i = 0; i < platforms.size();i++) {
+		for (int i = 0; i < platforms.size();i++) { //platforms
 			g.setColor(new Color(0,0,0));
 			platforms.get(i).update(player);
 			
@@ -75,13 +78,30 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 			if (colliding(platforms.get(i),player) && player.getVy() < 0) player.setVy(25);
 			
 			g.setColor(new Color(255,0,0)); //hitboxes
-			g.drawRect(platforms.get(i).getX(),(int)platforms.get(i).getHitbox().getY(),70,10);
-			g.drawRect(player.getX(),(int)player.getHitbox().getY(),60,60);
+			//g.drawRect(platforms.get(i).getX(),(int)platforms.get(i).getHitbox().getY(),70,10);
+			//g.drawRect(player.getX(),(int)player.getHitbox().getY(),60,60);
 		}
 		
+		drawOverlay(g);
 		
+		System.out.println(platforms.size());
 	}
 	
+	public void drawBackground(Graphics g) {
+		g.setColor(new Color(209, 197, 33));
+		g.fillRect(0,0,2000,2000);
+		g.setColor(new Color(13, 104, 189));
+		for (int i = 0; i < 200; i++) {
+			g.drawLine(0,i*20,2000,i*20);
+		}
+		g.setColor(new Color(194, 53, 35));
+		g.drawLine(75,0,75,2000);
+	}
+	
+	public void drawOverlay(Graphics g) {
+		g.setColor(new Color(145, 42, 29));
+		g.fillRect(0,0,2000,61);
+	}
 	
 	public boolean colliding(Platform b, Player p) {
     	return b.getHitbox().intersects(p.getHitbox());
@@ -150,6 +170,66 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	String[] JFrameNames = {"Doodle Jump","Doodle Jumpero"};
 	
 	
+	//*************************************
+	//*        Platform Generation        *
+	//*************************************
+	
+	
+	public void unloadUnusedPlatforms() {
+		int i = 0;
+		while (i < platforms.size()) {
+			if (platforms.get(i).getY() < player.getY()-100) {
+				platforms.remove(i);
+			} else {
+				i++;
+			}
+		}
+	}
+	
+	public int getHighestPlatform() { // returns the INDEX of the highest platform
+		Platform highest = platforms.get(0);
+		int index = 0;
+		for (int i = 0; i < platforms.size();i++) {
+			if (platforms.get(i).getY() > highest.getY()) {
+				highest = platforms.get(i);
+				index = i;
+			}
+		}
+		return index;
+	}
+	
+	public int getLowestPlatform() {
+		int lowest = platforms.get(0).getY();
+		for (int i = 0; i < platforms.size();i++) {
+			if (platforms.get(i).getY() < lowest) {
+				lowest = platforms.get(i).getY();
+			}
+		}
+		return lowest;
+	}
+	
+	public void generatePlatforms() {
+		int y = player.getY()+600;
+		int h = getHighestPlatform();
+		int l = getLowestPlatform();
+		System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y + "\nLowest: " + l + "\n");
+		if (h < (y+300)) {
+			platforms.add(new Platform((int)(Math.random()*530),h+50));
+		}
+	}
+	
+	
+	
+	public void updatePlatforms() {
+		generatePlatforms();
+		unloadUnusedPlatforms();
+	}
+	
+	
+	
+	
+	
+	
 	public Main() {
     	
         JFrame f = new JFrame(JFrameNames[(int) (Math.random()*JFrameNames.length)]);
@@ -166,10 +246,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         t.start();
         f.setVisible(true);
         
-        for (int i = 0; i < 1000; i ++) {
-        	platforms.add(new Platform((int)(Math.random()*550),(int)(Math.random()*-35000)));
-        }
         player.setY(0);
+        platforms.add(new Platform(-10,300));
         
     }
 	
