@@ -1,3 +1,4 @@
+import java.awt.Point;
 import java.awt.Rectangle;
 
 public class Player {
@@ -5,6 +6,7 @@ public class Player {
 	private String facing;
 	private int vy;
 	private Rectangle hitbox;
+	int vx;
 	
 	public Player() {
 		x = 0;
@@ -25,7 +27,9 @@ public class Player {
 	public Rectangle getHitbox() {return hitbox;}
 	public int getVy() {return vy;}
 	
-	public void update() {
+	public void update(Point p) {
+		vx = ((int) (p.getX()-x))/5;
+		x += vx;
 		y += vy;
 		if (vy > 20) vy = 20;
 		hitbox.setLocation(x-30,600);

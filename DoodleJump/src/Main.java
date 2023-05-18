@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -28,6 +29,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	
 	private Image Sprite;
 	private AffineTransform tx;
+	private Font font = new Font(Font.DIALOG_INPUT, Font.BOLD, 32);
+	
+	private int frames;
+	private int prevScore = calculateScore();
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -39,7 +44,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         updatePlatforms();
-        
+ 
+        frames++;
         drawBackground(g);
         
         prevX = player.getX();
@@ -49,12 +55,12 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         
         point.setLocation(point.getX()-35,point.getY()-30);
         
-        if (point.getX() < 525 && point.getX() > 0) player.setX((int)point.getX());
-        else if (point.getX() < 0) player.setX(0);
-        else player.setX(525);
+        //if (point.getX() < 525 && point.getX() > 0) player.setX((int)point.getX());
+        //else if (point.getX() < 0) player.setX(0);
+        //else player.setX(525);
         
         player.setVy(player.getVy()-1);
-        player.update();
+        player.update(point);
         
         
         if (player.getX() > prevX) player.setFacing("Right");
@@ -70,21 +76,21 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         
         
 		for (int i = 0; i < platforms.size();i++) { //platforms
-			g.setColor(new Color(0,0,0));
-			platforms.get(i).update(player);
-			
-			g.fillRect(platforms.get(i).getX(), 600+platforms.get(i).getY()+player.getY(),70,10);
+			platforms.get(i).paint(g,false);
 			
 			if (colliding(platforms.get(i),player) && player.getVy() < 0) player.setVy(25);
-			
-			g.setColor(new Color(255,0,0)); //hitboxes
-			//g.drawRect(platforms.get(i).getX(),(int)platforms.get(i).getHitbox().getY(),70,10);
-			//g.drawRect(player.getX(),(int)player.getHitbox().getY(),60,60);
 		}
 		
 		drawOverlay(g);
 		
+		g.setFont(font);
+		
 		System.out.println(platforms.size());
+		if (frames > 1000) frames = 0;
+		g.setColor(new Color(255,255,255));
+		int a = calculateScore();
+		g.drawString(a+"", 10,30);
+		prevScore = a;
 	}
 	
 	public void drawBackground(Graphics g) {
@@ -107,7 +113,13 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
     	return b.getHitbox().intersects(p.getHitbox());
     }
 	
-	
+	public int calculateScore() {
+		int score = player.getY()/10; 
+		
+		
+		if (prevScore < score) return score;
+		else return prevScore;
+	}
 	
 	
 	
@@ -175,7 +187,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	//*************************************
 	
 	
-	public void unloadUnusedPlatforms() {
+	public void unloadUnusedPlatformsL() {
 		int i = 0;
 		while (i < platforms.size()) {
 			if (600+platforms.get(i).getY()+player.getY() > 1500) {
@@ -186,7 +198,19 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		}
 	}
 	
+	public void unloadUnusedPlatformsU() {
+		int i = 0;
+		while (i < platforms.size()) {
+			if (platforms.get(i).getY()*-1-(player.getY()+1000) > 1500) {
+				platforms.remove(i);
+			} else {
+				i++;
+			}
+		}
+	}
+	
 	public int getHighestPlatform() { // returns the INDEX of the highest platform
+		if (platforms.size() == 0) return 0;
 		Platform highest = platforms.get(0);
 		int index = 0;
 		for (int i = 0; i < platforms.size();i++) {
@@ -213,9 +237,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	public void generatePlatforms() {
 		int y = player.getY()+600;
 		int h = getHighestPlatform();
-		int l = getLowestPlatform();
-		System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y + "\nLowest: " + l + "\n");
-		if (h < (y+1000)) {
+		System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y);
+		if (platforms.get(h).getY() < (y+1000)) {
 			platforms.add(new Platform((int)(Math.random()*530),platforms.get(h).getY()-100));
 		}
 	}
@@ -223,8 +246,11 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	
 	
 	public void updatePlatforms() {
-		generatePlatforms();
-		unloadUnusedPlatforms();
+		if (frames%10==0) {
+			generatePlatforms();
+			unloadUnusedPlatformsL();
+			unloadUnusedPlatformsU();
+		}
 	}
 	
 	
