@@ -76,7 +76,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         
         
 		for (int i = 0; i < platforms.size();i++) { //platforms
-			platforms.get(i).paint(g,false);
+			platforms.get(i).paint(g,false,player);
 			
 			if (colliding(platforms.get(i),player) && player.getVy() < 0) player.setVy(25);
 		}
@@ -235,6 +235,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	public void generatePlatforms() {
+		if (platforms.size() == 0) platforms.add(new Platform(-10,300));
 		int y = player.getY()+600;
 		int h = getHighestPlatform();
 		System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y);

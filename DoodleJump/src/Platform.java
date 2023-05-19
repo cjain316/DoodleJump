@@ -31,10 +31,10 @@ public class Platform {
 		hitbox.setLocation(x,600+y+p.getY());
 	}
 	
-	public void paint(Graphics g, boolean hitboxes) {
+	public void paint(Graphics g, boolean hitboxes, Player p) {
 		Graphics2D g2 = (Graphics2D) g;
 		
-		tx = AffineTransform.getTranslateInstance(x, y);
+		tx = AffineTransform.getTranslateInstance(x, 600+y+p.getY());
 		Sprite = getImage("Resources\\\\platformBreakable.png");
 		g2.drawImage(Sprite, tx, null);
 		
@@ -42,6 +42,7 @@ public class Platform {
 			g.setColor(new Color(255,0,0)); //hitboxes
 			g.drawRect(x,y,70,10);
 		}
+		update(p);
 	}
 	
 	protected Image getImage(String path) {
