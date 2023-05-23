@@ -99,6 +99,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 			menu = "GAME";
 			platforms.add(new Platform(-10,300));
 			reset();
+			for (int i = 0; i < 10; i++) {
+				generatePlatforms();
+			}
 		}
 		
 	}
