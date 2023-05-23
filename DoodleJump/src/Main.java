@@ -34,6 +34,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	private int frames;
 	private int prevScore = calculateScore();
 	
+	private String menu = "MAIN";
+	
+	private Point point;
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Main f = new Main();
@@ -47,21 +51,38 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
  
         frames++;
         drawBackground(g);
+        mouseLoop(g);
+        if (menu.equals("MAIN")) {gameLoop(g);}
+        if (menu.equals("GAME")) {gameLoop(g);}
         
-        prevX = player.getX();
-        PointerInfo p = MouseInfo.getPointerInfo();
-        Point point = p.getLocation();
+		
+		drawOverlay(g);
+		
+		scoreLoop(g);
+	}
+	
+	
+	
+	//************************
+	//*      Menu Loops      *
+	//************************
+	public void mouseLoop(Graphics g) { //Always active
+		PointerInfo p = MouseInfo.getPointerInfo();
+        point = p.getLocation();
         SwingUtilities.convertPointFromScreen(point, getFocusCycleRootAncestor());
         
         point.setLocation(point.getX()-35,point.getY()-30);
         
-        //if (point.getX() < 525 && point.getX() > 0) player.setX((int)point.getX());
-        //else if (point.getX() < 0) player.setX(0);
-        //else player.setX(525);
-        
+	}
+	
+	
+	
+	public void gameLoop(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		
+		prevX = player.getX();
         player.setVy(player.getVy()-1);
         player.update(point);
-        
         
         if (player.getX() > prevX) player.setFacing("Right");
         if (player.getX() < prevX) player.setFacing("Left");
@@ -72,21 +93,19 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
             else {Sprite = getImage("Resources\\\\jumperFacingRight.png");}
     		g2.drawImage(Sprite, tx, null);
         }
-		//System.out.println(player.getVy());
         
-        
-		for (int i = 0; i < platforms.size();i++) { //platforms
+        for (int i = 0; i < platforms.size();i++) { //platforms
 			platforms.get(i).paint(g,false,player);
 			
 			if (colliding(platforms.get(i),player) && player.getVy() < 0) player.setVy(25);
 		}
-		
-		drawOverlay(g);
-		
+        
+	}
+	
+	public void scoreLoop(Graphics g) {
 		g.setFont(font);
-		
-		System.out.println(platforms.size());
-		if (frames > 1000) frames = 0;
+        
+        if (frames > 1000) frames = 0;
 		g.setColor(new Color(255,255,255));
 		int a = calculateScore();
 		g.drawString(a+"", 10,30);
@@ -238,7 +257,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		if (platforms.size() == 0) platforms.add(new Platform(-10,300));
 		int y = player.getY()+600;
 		int h = getHighestPlatform();
-		System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y);
+		//System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y);
 		if (platforms.get(h).getY() < (y+1000)) {
 			platforms.add(new Platform((int)(Math.random()*530),platforms.get(h).getY()-100));
 		}
