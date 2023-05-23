@@ -213,6 +213,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	public void reset() {
 		player.setY(0);
 		player.setVy(25);
+		prevScore = 0;
 	}
 	
 	//end of section
