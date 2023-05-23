@@ -31,6 +31,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	private AffineTransform tx;
 	private Font font = new Font(Font.DIALOG_INPUT, Font.BOLD, 32);
 	
+	private boolean mouseDown;
+	
 	private int frames;
 	private int prevScore = calculateScore();
 	
@@ -52,13 +54,14 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         frames++;
         drawBackground(g);
         mouseLoop(g);
-        if (menu.equals("MAIN")) {gameLoop(g);}
+        if (menu.equals("MAIN")) {menuLoop(g);}
         if (menu.equals("GAME")) {gameLoop(g);}
+        if (menu.equals("DEAD")) {deadLoop(g);}
         
 		
 		drawOverlay(g);
 		
-		scoreLoop(g);
+		if (menu.equals("GAME") || menu.equals("DEAD")) scoreLoop(g);
 	}
 	
 	
@@ -75,7 +78,49 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         
 	}
 	
+	public void menuLoop(Graphics g) { // Main menu code 
+		Graphics2D g2 = (Graphics2D) g;
+		
+		Rectangle mouse = new Rectangle((int)point.getX(),(int)point.getY(),2,2);
+		Rectangle button = new Rectangle(100,600,390,140);
+		
+		
+		tx = AffineTransform.getTranslateInstance(-10, 100);
+        Sprite = getImage("Resources\\\\menuText.png");
+		g2.drawImage(Sprite, tx, null);
+		
+		
+		tx = AffineTransform.getTranslateInstance(100, 600);
+        Sprite = getImage("Resources\\\\menuButton.png");
+		g2.drawImage(Sprite, tx, null);
+		
+		if (mouse.intersects(button) && mouseDown) {
+			menu = "GAME";
+		}
+		
+	}
 	
+	public void deadLoop(Graphics g) { // Main menu code 
+		Graphics2D g2 = (Graphics2D) g;
+		
+		Rectangle mouse = new Rectangle((int)point.getX(),(int)point.getY(),2,2);
+		Rectangle button = new Rectangle(100,600,390,140);
+		
+		
+		tx = AffineTransform.getTranslateInstance(-10, 100);
+        Sprite = getImage("Resources\\\\menuText.png");
+		g2.drawImage(Sprite, tx, null);
+		
+		
+		tx = AffineTransform.getTranslateInstance(100, 600);
+        Sprite = getImage("Resources\\\\menuButton.png");
+		g2.drawImage(Sprite, tx, null);
+		
+		if (mouse.intersects(button) && mouseDown) {
+			menu = "GAME";
+		}
+		
+	}
 	
 	public void gameLoop(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
@@ -99,6 +144,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 			
 			if (colliding(platforms.get(i),player) && player.getVy() < 0) player.setVy(25);
 		}
+        
+        checkDead();
         
 	}
 	
@@ -142,6 +189,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	
 	
 	
+	//**************************
+	//*        Controls        *
+	//**************************
+	
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -152,13 +203,16 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
+		System.out.println("Mouse down");
+		mouseDown = true;
 		
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("Mouse up");
+		mouseDown = false;
 	}
 
 	@Override
@@ -196,6 +250,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		// TODO Auto-generated method stub
 		
 	}
+	
+	//*************************************
+	//*************************************
+	//*************************************
 	
 	Timer t;
 	String[] JFrameNames = {"Doodle Jump","Doodle Jumpero"};
@@ -264,6 +322,11 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	
+	//*************************************
+	//*************************************
+	//*************************************
+	
+	
 	
 	public void updatePlatforms() {
 		if (frames%10==0) {
@@ -273,7 +336,11 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		}
 	}
 	
-	
+	public void checkDead() {
+		if (platforms.size() == 0 && menu.equals("GAME")) {
+			menu = "DEAD";
+		}
+	}
 	
 	
 	
