@@ -95,7 +95,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		g2.drawImage(Sprite, tx, null);
 		
 		if (mouse.intersects(button) && mouseDown) {
+			mouseDown = false;
 			menu = "GAME";
+			platforms.add(new Platform(-10,300));
+			reset();
 		}
 		
 	}
@@ -107,17 +110,29 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		Rectangle button = new Rectangle(100,600,390,140);
 		
 		
-		tx = AffineTransform.getTranslateInstance(-10, 100);
-        Sprite = getImage("Resources\\\\menuText.png");
+		tx = AffineTransform.getTranslateInstance(100, 100);
+        Sprite = getImage("Resources\\\\diedMenuText.png");
 		g2.drawImage(Sprite, tx, null);
 		
+		tx = AffineTransform.getTranslateInstance(100, 350);
+        Sprite = getImage("Resources\\\\diedMenuScore.png");
+		g2.drawImage(Sprite, tx, null);
+		
+		font = new Font(Font.DIALOG_INPUT, Font.BOLD, 72);
+		g.setFont(font);
+        
+		g.setColor(new Color(255,255,255));
+		int a = calculateScore();
+		g.drawString(a+"", 100,500);
+		prevScore = a;
 		
 		tx = AffineTransform.getTranslateInstance(100, 600);
-        Sprite = getImage("Resources\\\\menuButton.png");
+        Sprite = getImage("Resources\\\\diedMenuButton.png");
 		g2.drawImage(Sprite, tx, null);
 		
 		if (mouse.intersects(button) && mouseDown) {
-			menu = "GAME";
+			mouseDown = false;
+			menu = "MAIN";
 		}
 		
 	}
@@ -150,6 +165,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	public void scoreLoop(Graphics g) {
+		font = new Font(Font.DIALOG_INPUT, Font.BOLD, 32);
 		g.setFont(font);
         
         if (frames > 1000) frames = 0;
@@ -158,6 +174,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		g.drawString(a+"", 10,30);
 		prevScore = a;
 	}
+	
+	
+	//Drawing outlines
 	
 	public void drawBackground(Graphics g) {
 		g.setColor(new Color(209, 197, 33));
@@ -175,6 +194,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		g.fillRect(0,0,2000,61);
 	}
 	
+	//End of section
+	
+	
+	//Helper methods
 	public boolean colliding(Platform b, Player p) {
     	return b.getHitbox().intersects(p.getHitbox());
     }
@@ -187,6 +210,12 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		else return prevScore;
 	}
 	
+	public void reset() {
+		player.setY(0);
+		player.setVy(25);
+	}
+	
+	//end of section
 	
 	
 	//**************************
@@ -203,7 +232,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("Mouse down");
+		//System.out.println("Mouse down");
 		mouseDown = true;
 		
 	}
@@ -211,7 +240,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("Mouse up");
+		//System.out.println("Mouse up");
 		mouseDown = false;
 	}
 
@@ -362,7 +391,6 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         f.setVisible(true);
         
         player.setY(0);
-        platforms.add(new Platform(-10,300));
         
     }
 	
