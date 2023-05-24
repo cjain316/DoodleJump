@@ -42,7 +42,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Main f = new Main();
+		Thread musico = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\Musico.wav", true));
+		musico.start();
+		new Main();
 		
 	}
 	
@@ -372,6 +374,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	public void checkDead() {
 		if (platforms.size() == 0 && menu.equals("GAME")) {
 			menu = "DEAD";
+			Thread death = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\Half-Life Death Sound.wav", false));
+			death.start();
 		}
 	}
 	
