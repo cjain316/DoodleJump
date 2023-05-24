@@ -37,5 +37,7 @@ public class Player {
 		height = y;
 		if (vy > 20) vy = 20;
 		hitbox.setLocation(x-30,600);
+		if (x > 540) x = 540;
+		if (x < 0) x = 0;
 	}
 }
