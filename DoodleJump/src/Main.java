@@ -222,6 +222,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		player.setY(0);
 		player.setVy(25);
 		prevScore = 0;
+		player.maxHeight = 0;
+		player.height = 0;
 	}
 	
 	//end of section
@@ -375,7 +377,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	public void checkDead() {
-		if (platforms.size() == 0 && menu.equals("GAME")) {
+		if (600 + player.maxHeight - player.height >=1000 && menu.equals("GAME")) {
 			menu = "DEAD";
 			Thread death = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\Half-Life Death Sound.wav", false));
 			death.start();
