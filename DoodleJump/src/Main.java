@@ -40,6 +40,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	
 	private Point point;
 	
+	public int playerPos;
+	public int ScreenPos;
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Thread musico = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\Musico.wav", true));
@@ -153,7 +156,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         if (player.getX() < prevX) player.setFacing("Left");
         
         if (player.getVy() < 20) {
-        	tx = AffineTransform.getTranslateInstance(player.getX(), 600);
+        	tx = AffineTransform.getTranslateInstance(player.getX(), 600 + player.maxHeight - player.height);
         	if (player.getFacing().equals("Left")) {Sprite = getImage("Resources\\\\jumperFacingLeft.png");}
             else {Sprite = getImage("Resources\\\\jumperFacingRight.png");}
     		g2.drawImage(Sprite, tx, null);

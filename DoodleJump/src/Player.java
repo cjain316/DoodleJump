@@ -7,6 +7,8 @@ public class Player {
 	private int vy;
 	private Rectangle hitbox;
 	int vx;
+	public static int height;
+	public static int maxHeight;
 	
 	public Player() {
 		x = 0;
@@ -31,6 +33,8 @@ public class Player {
 		vx = ((int) (p.getX()-x))/5;
 		x += vx;
 		y += vy;
+		if(y > maxHeight) maxHeight = y;
+		height = y;
 		if (vy > 20) vy = 20;
 		hitbox.setLocation(x-30,600);
 	}

@@ -34,7 +34,7 @@ public class Platform {
 	public void paint(Graphics g, boolean hitboxes, Player p) {
 		Graphics2D g2 = (Graphics2D) g;
 		
-		tx = AffineTransform.getTranslateInstance(x, 600+y+p.getY());
+		tx = AffineTransform.getTranslateInstance(x, 600+y+p.maxHeight);
 		Sprite = getImage("Resources\\\\platformBreakable.png");
 		g2.drawImage(Sprite, tx, null);
 		
