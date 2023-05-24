@@ -102,7 +102,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		if (mouse.intersects(button) && mouseDown) {
 			mouseDown = false;
 			menu = "GAME";
-			platforms.add(new Platform(-10,300));
+			platforms.add(new Platform(-10,300,false));
 			reset();
 			for (int i = 0; i < 10; i++) {
 				generatePlatforms();
@@ -163,9 +163,15 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         }
         
         for (int i = 0; i < platforms.size();i++) { //platforms
-			platforms.get(i).paint(g,false,player);
+			platforms.get(i).paint(g,true,player);
 			
-			if (colliding(platforms.get(i),player) && player.getVy() < 0) player.setVy(25);
+			if (colliding(platforms.get(i),player) && player.getVy() < 0) {
+				if (platforms.get(i).getSpring()) {
+					player.setVy(50);
+				} else {
+					player.setVy(25);
+				}
+			}
 		}
         
         checkDead();
@@ -224,6 +230,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		prevScore = 0;
 		player.maxHeight = 0;
 		player.height = 0;
+		while (platforms.size() > 0) {
+			platforms.remove(0);
+		}
 	}
 	
 	//end of section
@@ -352,12 +361,12 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	public void generatePlatforms() {
-		if (platforms.size() == 0) platforms.add(new Platform(-10,300));
+		if (platforms.size() == 0) platforms.add(new Platform(-10,300,false));
 		int y = player.getY()+600;
 		int h = getHighestPlatform();
 		//System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y);
 		if (platforms.get(h).getY() < (y+1000)) {
-			platforms.add(new Platform((int)(Math.random()*530),platforms.get(h).getY()-100));
+			platforms.add(new Platform((int)(Math.random()*530),platforms.get(h).getY()-100,springGenerate()));
 		}
 	}
 	
@@ -419,6 +428,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
             tempImage    = Toolkit.getDefaultToolkit().getImage(imageURL);
         } catch (Exception e) {e.printStackTrace();}
         return tempImage;
+    }
+    
+    public boolean springGenerate() {
+    	return Math.random() >= 0.95;
     }
 }
 

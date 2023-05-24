@@ -14,10 +14,13 @@ public class Platform {
 	private Image Sprite;
 	private AffineTransform tx;
 	
-	public Platform(int x, int y) {
+	private boolean hasSpring;
+	
+	public Platform(int x, int y, boolean spring) {
 		this.x = x;
 		this.y = y;
 		hitbox = new Rectangle(x,y,70,10);
+		hasSpring = spring;
 	}
 	
 	public void setX(int x) {this.x = x;}
@@ -26,6 +29,7 @@ public class Platform {
 	public int getX() {return x;}
 	public int getY() {return y;}
 	public Rectangle getHitbox() {return hitbox;}
+	public boolean getSpring() {return hasSpring;}
 	
 	public void update(Player p) {
 		hitbox.setLocation(x,600+y+p.getY());
@@ -34,9 +38,15 @@ public class Platform {
 	public void paint(Graphics g, boolean hitboxes, Player p) {
 		Graphics2D g2 = (Graphics2D) g;
 		
-		tx = AffineTransform.getTranslateInstance(x, 600+y+p.maxHeight);
+		tx = AffineTransform.getTranslateInstance(x, y+p.maxHeight);
 		Sprite = getImage("Resources\\\\platformBreakable.png");
 		g2.drawImage(Sprite, tx, null);
+		
+		if (hasSpring) {
+			tx = AffineTransform.getTranslateInstance(x+22, 576+y+p.maxHeight);
+			Sprite = getImage("Resources\\\\spring.png");
+			g2.drawImage(Sprite, tx, null);
+		}
 		
 		if (hitboxes) {
 			g.setColor(new Color(255,0,0)); //hitboxes
