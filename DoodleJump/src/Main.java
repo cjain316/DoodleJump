@@ -178,12 +178,11 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 			
 			if (colliding(platforms.get(i),player) && player.getVy() < 0) {
 				if (platforms.get(i).getSpring()) {
-					player.setVy(50);
+					springFunction();
 				} if (platforms.get(i).getTrampoline()){
-					player.setVy(75);
+					trampolineFunction();
 				} if (platforms.get(i).getJetpack()) {
-					player.setJetpack(true);
-					platforms.get(i).setJetpack(false);
+					jetpackFunction(platforms.get(i));
 				} if (!platforms.get(i).hasAttribute()) {
 					player.setVy(25);
 				}
@@ -391,8 +390,18 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	//*************************************
 	//*************************************
 	//*************************************
+	public void springFunction() {
+		player.setVy(50);
+	}
 	
+	public void trampolineFunction() {
+		player.setVy(75);
+	}
 	
+	public void jetpackFunction(Platform p) {
+		player.setJetpack(true);
+		p.setJetpack(false);
+	}
 	
 	public void updatePlatforms() {
 		if (frames%2==0) {
