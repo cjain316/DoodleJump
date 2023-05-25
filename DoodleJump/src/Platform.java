@@ -15,21 +15,37 @@ public class Platform {
 	private AffineTransform tx;
 	
 	private boolean hasSpring;
+	private boolean hasTrampoline;
+	private boolean hasJetpack;
 	
-	public Platform(int x, int y, boolean spring) {
+	public Platform(int x, int y, boolean spring,boolean trampoline,boolean jetpack) {
 		this.x = x;
 		this.y = y;
 		hitbox = new Rectangle(x,y,70,10);
 		hasSpring = spring;
+		hasTrampoline = trampoline;
+		if (hasSpring && hasTrampoline) {
+			hasSpring = false;
+			hasTrampoline = true;
+		}
+		if (jetpack) {
+			hasSpring = false;
+			hasTrampoline = false;
+			hasJetpack = true;
+		}
 	}
 	
 	public void setX(int x) {this.x = x;}
 	public void setY(int y) {this.y = y;}
+	public void setJetpack(boolean x) {hasJetpack = x;}
 	
 	public int getX() {return x;}
 	public int getY() {return y;}
 	public Rectangle getHitbox() {return hitbox;}
 	public boolean getSpring() {return hasSpring;}
+	public boolean getTrampoline() {return hasTrampoline;}
+	public boolean hasAttribute() {return hasSpring||hasTrampoline||hasJetpack;}
+	public boolean getJetpack() {return hasJetpack;}
 	
 	public void update(Player p) {
 		hitbox.setLocation(x,y+p.maxHeight+600);
@@ -45,6 +61,18 @@ public class Platform {
 		if (hasSpring) {
 			tx = AffineTransform.getTranslateInstance(x+22, y+p.maxHeight+600-24);
 			Sprite = getImage("Resources\\\\spring.png");
+			g2.drawImage(Sprite, tx, null);
+		}
+		
+		if (hasTrampoline) {
+			tx = AffineTransform.getTranslateInstance(x, y+p.maxHeight+600-16);
+			Sprite = getImage("Resources\\\\trampoline.png");
+			g2.drawImage(Sprite, tx, null);
+		}
+		
+		if (hasJetpack) {
+			tx = AffineTransform.getTranslateInstance(x+31, y+p.maxHeight+600-42);
+			Sprite = getImage("Resources\\\\jetpack_Item.png");
 			g2.drawImage(Sprite, tx, null);
 		}
 		

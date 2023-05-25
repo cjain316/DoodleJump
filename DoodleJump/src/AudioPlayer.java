@@ -65,11 +65,11 @@ public class AudioPlayer implements LineListener, Runnable{
 	@Override
 	public void update(LineEvent event) {
 		if (LineEvent.Type.START == event.getType()) {
-            System.out.println("Playback started.");
+            //System.out.println("Playback started.");
             playCompleted = false;
         } else if (LineEvent.Type.STOP == event.getType()) {
             playCompleted = true;
-            System.out.println("Playback completed.");
+            //System.out.println("Playback completed.");
         }
 	}
 	

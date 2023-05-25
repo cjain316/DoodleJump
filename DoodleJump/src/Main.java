@@ -102,7 +102,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		if (mouse.intersects(button) && mouseDown) {
 			mouseDown = false;
 			menu = "GAME";
-			platforms.add(new Platform(-10,300,false));
+			platforms.add(new Platform(-10,300,false,false,false));
 			reset();
 			for (int i = 0; i < 10; i++) {
 				generatePlatforms();
@@ -159,6 +159,19 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         if (player.getFacing().equals("Left")) {Sprite = getImage("Resources\\\\jumperFacingLeft.png");}
         else {Sprite = getImage("Resources\\\\jumperFacingRight.png");}
     	g2.drawImage(Sprite, tx, null);
+    	
+    	if (player.getJetpack()) {
+    
+            if (player.getFacing().equals("Left")) {
+            	Sprite = getImage("Resources\\\\jetpack_Using_Left.gif");
+            	tx = AffineTransform.getTranslateInstance(player.getX()+20, 600 + 10 + player.maxHeight - player.height);
+            }
+            else {
+            	Sprite = getImage("Resources\\\\jetpack_Using_Right.gif");
+            	tx = AffineTransform.getTranslateInstance(player.getX()-8, 600 + 10 + player.maxHeight - player.height);
+            }
+        	g2.drawImage(Sprite, tx, null);
+    	}
         
         for (int i = 0; i < platforms.size();i++) { //platforms
 			platforms.get(i).paint(g,false,player);
@@ -166,7 +179,12 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 			if (colliding(platforms.get(i),player) && player.getVy() < 0) {
 				if (platforms.get(i).getSpring()) {
 					player.setVy(50);
-				} else {
+				} if (platforms.get(i).getTrampoline()){
+					player.setVy(75);
+				} if (platforms.get(i).getJetpack()) {
+					player.setJetpack(true);
+					platforms.get(i).setJetpack(false);
+				} if (!platforms.get(i).hasAttribute()) {
 					player.setVy(25);
 				}
 			}
@@ -359,12 +377,13 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	public void generatePlatforms() {
-		if (platforms.size() == 0) platforms.add(new Platform(-10,300,false));
+		if (platforms.size() == 0) platforms.add(new Platform(-10,300,false,false,false));
 		int y = player.getY()+600;
 		int h = getHighestPlatform();
 		//System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y);
 		if (platforms.get(h).getY() < (y+1000)) {
-			platforms.add(new Platform((int)(Math.random()*530),platforms.get(h).getY()-100,springGenerate()));
+			platforms.add(new Platform((int)(Math.random()*530),platforms.get(h).getY()-100,
+					springGenerate(),trampGenerate(),jetpackGenerate()));
 		}
 	}
 	
@@ -430,6 +449,12 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
     
     public boolean springGenerate() {
     	return Math.random() >= 0.95;
+    }
+    public boolean trampGenerate() {
+    	return Math.random() >= 0.98;
+    }
+    public boolean jetpackGenerate() {
+    	return Math.random() >= 0.99;
     }
 }
 
