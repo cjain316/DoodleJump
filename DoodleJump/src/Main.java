@@ -392,15 +392,21 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	//*************************************
 	public void springFunction() {
 		player.setVy(50);
+		Thread spring = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\spring.wav", false));
+		spring.start();
 	}
 	
 	public void trampolineFunction() {
 		player.setVy(75);
+		Thread tramp = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\trampoline.wav", false));
+		tramp.start();
 	}
 	
 	public void jetpackFunction(Platform p) {
 		player.setJetpack(true);
 		p.setJetpack(false);
+		Thread jetpack = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\jetpack.wav", false));
+		jetpack.start();
 	}
 	
 	public void updatePlatforms() {

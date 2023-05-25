@@ -17,6 +17,9 @@ public class Player {
 	private int jetpackUseTime = 200;
 	private int jetpackSpeed = 50;
 	
+	private double start;
+	private double end;
+	
 	public Player() {
 		x = 0;
 		y = 0;
@@ -36,7 +39,7 @@ public class Player {
 	public void setY(int y) {this.y = y;}
 	public void setFacing(String s) {facing = s;}
 	public void setVy(int vy) {this.vy = vy;}
-	public void setJetpack(boolean x) {hasJetpack = x;}
+	public void setJetpack(boolean x) {hasJetpack = x; if (x) {start = System.currentTimeMillis();}}
 	
 	public int getX() {return x;}
 	public int getY() {return y;}
@@ -62,6 +65,8 @@ public class Player {
 		if (jetpackFrames == jetpackUseTime) {
 			hasJetpack = false;
 			jetpackFrames = 0;
+			end = System.currentTimeMillis();
+			System.out.println(end-start);
 		}
 	}
 }
