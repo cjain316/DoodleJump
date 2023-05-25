@@ -66,7 +66,7 @@ public class Player {
 			hasJetpack = false;
 			jetpackFrames = 0;
 			end = System.currentTimeMillis();
-			System.out.println(end-start);
+			//System.out.println(end-start);
 		}
 	}
 }

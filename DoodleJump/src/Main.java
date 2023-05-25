@@ -469,7 +469,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
     	return Math.random() >= 0.98;
     }
     public boolean jetpackGenerate() {
-    	return Math.random() >= 0.99;
+    	return Math.random() >= 0.995;
     }
 }
 
