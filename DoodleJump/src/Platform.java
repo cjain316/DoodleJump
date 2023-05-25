@@ -32,25 +32,25 @@ public class Platform {
 	public boolean getSpring() {return hasSpring;}
 	
 	public void update(Player p) {
-		hitbox.setLocation(x,600+y+p.getY());
+		hitbox.setLocation(x,y+p.maxHeight+600);
 	}
 	
 	public void paint(Graphics g, boolean hitboxes, Player p) {
 		Graphics2D g2 = (Graphics2D) g;
-		
-		tx = AffineTransform.getTranslateInstance(x, y+p.maxHeight);
+		update(p);
+		tx = AffineTransform.getTranslateInstance(x, y+p.maxHeight+600);
 		Sprite = getImage("Resources\\\\platformBreakable.png");
 		g2.drawImage(Sprite, tx, null);
 		
 		if (hasSpring) {
-			tx = AffineTransform.getTranslateInstance(x+22, 576+y+p.maxHeight);
+			tx = AffineTransform.getTranslateInstance(x+22, y+p.maxHeight+600-24);
 			Sprite = getImage("Resources\\\\spring.png");
 			g2.drawImage(Sprite, tx, null);
 		}
 		
 		if (hitboxes) {
 			g.setColor(new Color(255,0,0)); //hitboxes
-			g.drawRect(x,y,70,10);
+			g.drawRect((int)hitbox.getX(),(int)(hitbox.getY()),70,10);
 		}
 		update(p);
 	}

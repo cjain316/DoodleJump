@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -18,6 +20,11 @@ public class Player {
 		hitbox = new Rectangle(x,y,60,60);
 	}
 	
+	public void paintHitbox(Graphics g) {
+		g.setColor(new Color(255,0,0));
+		
+	}
+	
 	public void setX(int x) {this.x = x;}
 	public void setY(int y) {this.y = y;}
 	public void setFacing(String s) {facing = s;}
@@ -35,7 +42,7 @@ public class Player {
 		y += vy;
 		if(y > maxHeight) maxHeight = y;
 		height = y;
-		hitbox.setLocation(x-30,600);
+		hitbox.setLocation(x-30,600 + maxHeight - height);
 		if (x > 540) x = 540;
 		if (x < 0) x = 0;
 	}

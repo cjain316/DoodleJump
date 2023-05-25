@@ -155,12 +155,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         if (player.getX() > prevX) player.setFacing("Right");
         if (player.getX() < prevX) player.setFacing("Left");
         
-        if (player.getVy() < 20) {
-        	tx = AffineTransform.getTranslateInstance(player.getX(), 600 + player.maxHeight - player.height);
-        	if (player.getFacing().equals("Left")) {Sprite = getImage("Resources\\\\jumperFacingLeft.png");}
-            else {Sprite = getImage("Resources\\\\jumperFacingRight.png");}
-    		g2.drawImage(Sprite, tx, null);
-        }
+        tx = AffineTransform.getTranslateInstance(player.getX(), 600 + player.maxHeight - player.height);
+        if (player.getFacing().equals("Left")) {Sprite = getImage("Resources\\\\jumperFacingLeft.png");}
+        else {Sprite = getImage("Resources\\\\jumperFacingRight.png");}
+    	g2.drawImage(Sprite, tx, null);
         
         for (int i = 0; i < platforms.size();i++) { //platforms
 			platforms.get(i).paint(g,true,player);
