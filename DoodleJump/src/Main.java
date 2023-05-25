@@ -161,7 +161,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
     	g2.drawImage(Sprite, tx, null);
         
         for (int i = 0; i < platforms.size();i++) { //platforms
-			platforms.get(i).paint(g,true,player);
+			platforms.get(i).paint(g,false,player);
 			
 			if (colliding(platforms.get(i),player) && player.getVy() < 0) {
 				if (platforms.get(i).getSpring()) {
@@ -376,7 +376,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	
 	
 	public void updatePlatforms() {
-		if (frames%10==0) {
+		if (frames%2==0) {
 			generatePlatforms();
 			unloadUnusedPlatformsL();
 			unloadUnusedPlatformsU();
