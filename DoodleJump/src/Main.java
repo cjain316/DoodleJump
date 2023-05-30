@@ -43,8 +43,17 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	public int playerPos;
 	public int ScreenPos;
 	
-	String[] skins = {"Resources\\jumperFacingRight.png"};
-	String[] skinsCounter = {"Resources\\jumperFacingLeft.png"};
+	String[] skins = {"Resources\\jumperFacingRight.png","Resources\\genshinBobblerRight.png",
+			"Resources\\bobbletteRight.png","Resources\\ninjaRight.png","Resources\\puritanRight.png",
+			"Resources\\fortniteRight.png","Resources\\gokuRight.png","Resources\\rossRight.png",
+			"Resources\\danielRight.png"};
+	
+	String[] skinsCounter = {"Resources\\jumperFacingLeft.png","Resources\\genshinBobblerLeft.png",
+			"Resources\\bobbletteLeft.png","Resources\\ninjaLeft.png","Resources\\puritanLeft.png",
+			"Resources\\fortniteLeft.png","Resources\\gokuLeft.png","Resources\\rossLeft.png",
+			"Resources\\danielLeft.png"};
+	
+	
 	Rectangle[] buttons;
 	
 	private String skinRight = "Resources\\jumperFacingRight.png";
@@ -66,8 +75,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		for (int i = 0;i < skins.length; i++) {
 			buttons[i] = new Rectangle(x,y,50,50);
 			x += 110;
-			if (i % 5 == 0) {
+			if (i % 4 == 0 && i != 0) {
 				y += 110;
+				x = 50;
 			}
 		}
 	}
@@ -252,9 +262,11 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	public void skinLoop(Graphics g) { // Main menu code 
+		boolean showClickBoxes = false;
+		
 		Graphics2D g2 = (Graphics2D) g;
 		
-		Rectangle mouse = new Rectangle((int)point.getX(),(int)point.getY(),2,2);
+		Rectangle mouse = new Rectangle((int)point.getX()+28,(int)point.getY(),2,2);
 		Rectangle menuButton = new Rectangle(475,900,100,50);
 		
 		tx = AffineTransform.getTranslateInstance(475, 900);
@@ -278,6 +290,14 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 				menu = "MAIN";
 				skinLeft = skinsCounter[i];
 				skinRight = skins[i];
+			}
+		}
+		
+		if (showClickBoxes) {
+			for (int i = 0; i < buttons.length; i++) {
+				g.setColor(Color.BLACK);
+				g.drawRect((int)buttons[i].getX(),(int)buttons[i].getY(),(int)buttons[i].getWidth(),(int)buttons[i].getHeight());
+				g.drawRect((int)mouse.getX(),(int)mouse.getY(),(int)mouse.getWidth(),(int)mouse.getHeight());
 			}
 		}
 	}
