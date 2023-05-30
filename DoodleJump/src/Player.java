@@ -17,6 +17,11 @@ public class Player {
 	private int jetpackUseTime = 200;
 	private int jetpackSpeed = 50;
 	
+	private int prophatFrames;
+	private boolean hasProphat;
+	private int prophatUseTime = 150;
+	private int prophatSpeed = 30;
+	
 	private double start;
 	private double end;
 	
@@ -40,6 +45,7 @@ public class Player {
 	public void setFacing(String s) {facing = s;}
 	public void setVy(int vy) {this.vy = vy;}
 	public void setJetpack(boolean x) {hasJetpack = x; if (x) {start = System.currentTimeMillis();}}
+	public void setProphat(boolean x) {hasProphat = x; if (x) {start = System.currentTimeMillis();}}
 	
 	public int getX() {return x;}
 	public int getY() {return y;}
@@ -47,6 +53,7 @@ public class Player {
 	public Rectangle getHitbox() {return hitbox;}
 	public int getVy() {return vy;}
 	public boolean getJetpack() {return hasJetpack;}
+	public boolean getProphat() {return hasProphat;}
 	
 	public void update(Point p) {
 		vx = ((int) (p.getX()-x))/5;
@@ -65,6 +72,17 @@ public class Player {
 		if (jetpackFrames == jetpackUseTime) {
 			hasJetpack = false;
 			jetpackFrames = 0;
+			end = System.currentTimeMillis();
+			//System.out.println(end-start);
+		}
+		
+		if (hasProphat) {
+			vy = prophatSpeed;
+			prophatFrames++;
+		}
+		if (prophatFrames == prophatUseTime) {
+			hasProphat = false;
+			prophatFrames = 0;
 			end = System.currentTimeMillis();
 			//System.out.println(end-start);
 		}

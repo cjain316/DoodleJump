@@ -102,7 +102,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		if (mouse.intersects(button) && mouseDown) {
 			mouseDown = false;
 			menu = "GAME";
-			platforms.add(new Platform(-10,300,false,false,false));
+			platforms.add(new Platform(-10,300,false,false,false,false));
 			reset();
 			for (int i = 0; i < 10; i++) {
 				generatePlatforms();
@@ -172,6 +172,19 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
             }
         	g2.drawImage(Sprite, tx, null);
     	}
+    	
+    	if (player.getProphat()) {
+    	    
+            if (player.getFacing().equals("Left")) {
+            	Sprite = getImage("Resources\\\\prophatFlying.gif");
+            	tx = AffineTransform.getTranslateInstance(player.getX()+23, 600 - 10 + player.maxHeight - player.height);
+            }
+            else {
+            	Sprite = getImage("Resources\\\\prophatFlying.gif");
+            	tx = AffineTransform.getTranslateInstance(player.getX() + 8, 600-10 + player.maxHeight - player.height);
+            }
+        	g2.drawImage(Sprite, tx, null);
+    	}
         
         for (int i = 0; i < platforms.size();i++) { //platforms
 			platforms.get(i).paint(g,false,player);
@@ -183,6 +196,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 					trampolineFunction();
 				} if (platforms.get(i).getJetpack()) {
 					jetpackFunction(platforms.get(i));
+				} if (platforms.get(i).getProphat()) {
+					prophatFunction(platforms.get(i));
 				} if (!platforms.get(i).hasAttribute()) {
 					player.setVy(25);
 				}
@@ -376,13 +391,13 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	}
 	
 	public void generatePlatforms() {
-		if (platforms.size() == 0) platforms.add(new Platform(-10,300,false,false,false));
+		if (platforms.size() == 0) platforms.add(new Platform(-10,300,false,false,false,false));
 		int y = player.getY()+600;
 		int h = getHighestPlatform();
 		//System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y);
 		if (platforms.get(h).getY() < (y+1000)) {
 			platforms.add(new Platform((int)(Math.random()*530),platforms.get(h).getY()-100,
-					springGenerate(),trampGenerate(),jetpackGenerate()));
+					springGenerate(),trampGenerate(),jetpackGenerate(),prophatGenerate()));
 		}
 	}
 	
@@ -408,6 +423,14 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		Thread jetpack = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\jetpack.wav", false));
 		jetpack.start();
 	}
+	
+	public void prophatFunction(Platform p) {
+		player.setProphat(true);
+		p.setProphat(false);
+		Thread prophat = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\jetpack.wav", false));
+		prophat.start();
+	}
+	
 	
 	public void updatePlatforms() {
 		if (frames%2==0) {
@@ -470,6 +493,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
     }
     public boolean jetpackGenerate() {
     	return Math.random() >= 0.995;
+    }
+    public boolean prophatGenerate() {
+    	return Math.random() >= 0.7;
     }
 }
 
