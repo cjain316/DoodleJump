@@ -75,7 +75,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		for (int i = 0;i < skins.length; i++) {
 			buttons[i] = new Rectangle(x,y,50,50);
 			x += 110;
-			if (i % 4 == 0 && i != 0) {
+			if (i+1 % 5 == 0 || i == 4) {
 				y += 110;
 				x = 50;
 			}
