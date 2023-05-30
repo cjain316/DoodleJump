@@ -43,12 +43,33 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	public int playerPos;
 	public int ScreenPos;
 	
+	String[] skins = {"Resources\\jumperFacingRight.png"};
+	String[] skinsCounter = {"Resources\\jumperFacingLeft.png"};
+	Rectangle[] buttons;
+	
+	private String skinRight = "Resources\\jumperFacingRight.png";
+	private String skinLeft = "Resources\\jumperFacingLeft.png";
+			
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Thread musico = new Thread(new AudioPlayer(".\\\\src\\\\Sounds\\\\Musico.wav", true));
+		Thread musico = new Thread(new AudioPlayer(".\\src\\Sounds\\Musico.wav", true));
 		musico.start();
 		new Main();
 		
+	}
+	
+	public void parseButtons() {
+		int x = 50;
+		int y = 80;
+		buttons = new Rectangle[skins.length];
+		for (int i = 0;i < skins.length; i++) {
+			buttons[i] = new Rectangle(x,y,50,50);
+			x += 110;
+			if (i % 5 == 0) {
+				y += 110;
+			}
+		}
 	}
 	
 	public void paint(Graphics g) {
@@ -62,6 +83,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         if (menu.equals("MAIN")) {menuLoop(g);}
         if (menu.equals("GAME")) {gameLoop(g);}
         if (menu.equals("DEAD")) {deadLoop(g);}
+        if (menu.equals("SKIN")) {skinLoop(g);}
         
 		
 		drawOverlay(g);
@@ -87,16 +109,21 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		Graphics2D g2 = (Graphics2D) g;
 		
 		Rectangle mouse = new Rectangle((int)point.getX(),(int)point.getY(),2,2);
-		Rectangle button = new Rectangle(100,600,390,140);
+		Rectangle button = new Rectangle(100,450,390,140);
+		Rectangle skinButton = new Rectangle(100,700,390,140);
 		
 		
 		tx = AffineTransform.getTranslateInstance(-10, 100);
-        Sprite = getImage("Resources\\\\menuText.png");
+        Sprite = getImage("Resources\\menuText.png");
 		g2.drawImage(Sprite, tx, null);
 		
 		
-		tx = AffineTransform.getTranslateInstance(100, 600);
-        Sprite = getImage("Resources\\\\menuButton.png");
+		tx = AffineTransform.getTranslateInstance(100, 450);
+        Sprite = getImage("Resources\\menuButton.png");
+		g2.drawImage(Sprite, tx, null);
+		
+		tx = AffineTransform.getTranslateInstance(100, 700);
+        Sprite = getImage("Resources\\skinsButton.png");
 		g2.drawImage(Sprite, tx, null);
 		
 		if (mouse.intersects(button) && mouseDown) {
@@ -109,6 +136,11 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 			}
 		}
 		
+		if (mouse.intersects(skinButton) && mouseDown) {
+			mouseDown = false;
+			menu = "SKIN";
+		}
+		
 	}
 	
 	public void deadLoop(Graphics g) { // Main menu code 
@@ -119,11 +151,11 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		
 		
 		tx = AffineTransform.getTranslateInstance(100, 100);
-        Sprite = getImage("Resources\\\\diedMenuText.png");
+        Sprite = getImage("Resources\\diedMenuText.png");
 		g2.drawImage(Sprite, tx, null);
 		
 		tx = AffineTransform.getTranslateInstance(100, 350);
-        Sprite = getImage("Resources\\\\diedMenuScore.png");
+        Sprite = getImage("Resources\\diedMenuScore.png");
 		g2.drawImage(Sprite, tx, null);
 		
 		font = new Font(Font.DIALOG_INPUT, Font.BOLD, 72);
@@ -135,7 +167,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		prevScore = a;
 		
 		tx = AffineTransform.getTranslateInstance(100, 600);
-        Sprite = getImage("Resources\\\\diedMenuButton.png");
+        Sprite = getImage("Resources\\diedMenuButton.png");
 		g2.drawImage(Sprite, tx, null);
 		
 		if (mouse.intersects(button) && mouseDown) {
@@ -156,18 +188,18 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         if (player.getX() < prevX) player.setFacing("Left");
         
         tx = AffineTransform.getTranslateInstance(player.getX(), 600 + player.maxHeight - player.height);
-        if (player.getFacing().equals("Left")) {Sprite = getImage("Resources\\\\jumperFacingLeft.png");}
-        else {Sprite = getImage("Resources\\\\jumperFacingRight.png");}
+        if (player.getFacing().equals("Left")) {Sprite = getImage(skinLeft);}
+        else {Sprite = getImage(skinRight);}
     	g2.drawImage(Sprite, tx, null);
     	
     	if (player.getJetpack()) {
     
             if (player.getFacing().equals("Left")) {
-            	Sprite = getImage("Resources\\\\jetpack_Using_Left.gif");
+            	Sprite = getImage("Resources\\jetpack_Using_Left.gif");
             	tx = AffineTransform.getTranslateInstance(player.getX()+20, 600 + 10 + player.maxHeight - player.height);
             }
             else {
-            	Sprite = getImage("Resources\\\\jetpack_Using_Right.gif");
+            	Sprite = getImage("Resources\\jetpack_Using_Right.gif");
             	tx = AffineTransform.getTranslateInstance(player.getX()-8, 600 + 10 + player.maxHeight - player.height);
             }
         	g2.drawImage(Sprite, tx, null);
@@ -176,11 +208,11 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
     	if (player.getProphat()) {
     	    
             if (player.getFacing().equals("Left")) {
-            	Sprite = getImage("Resources\\\\prophatFlying.gif");
+            	Sprite = getImage("Resources\\prophatFlying.gif");
             	tx = AffineTransform.getTranslateInstance(player.getX()+23, 600 - 10 + player.maxHeight - player.height);
             }
             else {
-            	Sprite = getImage("Resources\\\\prophatFlying.gif");
+            	Sprite = getImage("Resources\\prophatFlying.gif");
             	tx = AffineTransform.getTranslateInstance(player.getX() + 8, 600-10 + player.maxHeight - player.height);
             }
         	g2.drawImage(Sprite, tx, null);
@@ -217,6 +249,37 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		int a = calculateScore();
 		g.drawString(a+"", 10,30);
 		prevScore = a;
+	}
+	
+	public void skinLoop(Graphics g) { // Main menu code 
+		Graphics2D g2 = (Graphics2D) g;
+		
+		Rectangle mouse = new Rectangle((int)point.getX(),(int)point.getY(),2,2);
+		Rectangle menuButton = new Rectangle(475,900,100,50);
+		
+		tx = AffineTransform.getTranslateInstance(475, 900);
+        Sprite = getImage("Resources\\menuButtonSkin.png");
+		g2.drawImage(Sprite, tx, null);
+		
+		if (mouse.intersects(menuButton) && mouseDown) {
+			mouseDown = false;
+			menu = "MAIN";
+		}
+		
+		for (int i = 0; i < skins.length;i++) {
+			tx = AffineTransform.getTranslateInstance(buttons[i].getX(), buttons[i].getY());
+	        Sprite = getImage(skins[i]);
+			g2.drawImage(Sprite, tx, null);
+		}
+		
+		for (int i = 0; i < buttons.length;i++) {
+			if (mouse.intersects(buttons[i]) && mouseDown) {
+				mouseDown = false;
+				menu = "MAIN";
+				skinLeft = skinsCounter[i];
+				skinRight = skins[i];
+			}
+		}
 	}
 	
 	
@@ -468,7 +531,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         f.setVisible(true);
         
         player.setY(0);
-        
+        parseButtons();
     }
 	
 	private void update() {
@@ -495,7 +558,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
     	return Math.random() >= 0.995;
     }
     public boolean prophatGenerate() {
-    	return Math.random() >= 0.7;
+    	return Math.random() >= 0.98;
     }
 }
 
