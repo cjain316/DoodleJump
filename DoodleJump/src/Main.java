@@ -46,12 +46,12 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	String[] skins = {"Resources\\jumperFacingRight.png","Resources\\genshinBobblerRight.png",
 			"Resources\\bobbletteRight.png","Resources\\ninjaRight.png","Resources\\puritanRight.png",
 			"Resources\\fortniteRight.png","Resources\\gokuRight.png","Resources\\rossRight.png",
-			"Resources\\danielRight.png"};
+			"Resources\\danielRight.png","Resources\\jonseyRight.png"};
 	
 	String[] skinsCounter = {"Resources\\jumperFacingLeft.png","Resources\\genshinBobblerLeft.png",
 			"Resources\\bobbletteLeft.png","Resources\\ninjaLeft.png","Resources\\puritanLeft.png",
 			"Resources\\fortniteLeft.png","Resources\\gokuLeft.png","Resources\\rossLeft.png",
-			"Resources\\danielLeft.png"};
+			"Resources\\danielLeft.png","Resources\\jonseyLeft.png"};
 	
 	
 	Rectangle[] buttons;
