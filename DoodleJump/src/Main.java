@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.util.ArrayList;
+import java.util.*;
+import java.io.*;
 
 public class Main extends JPanel implements KeyListener, ActionListener, MouseListener {
 	private Player player = new Player();
@@ -38,21 +40,29 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	
 	private String menu = "MAIN";
 	
+	
+	int timer = 1000;
+	
 	private Point point;
 	
 	public int playerPos;
 	public int ScreenPos;
 	
-	String[] skins = {"Resources\\jumperFacingRight.png","Resources\\genshinBobblerRight.png",
-			"Resources\\bobbletteRight.png","Resources\\ninjaRight.png","Resources\\puritanRight.png",
+	String[] skins = {"Resources\\jumperFacingRight.png", "Resources\\bobbletteRight.png",
+			"Resources\\genshinBobblerRight.png",
+			"Resources\\ninjaRight.png","Resources\\puritanRight.png",
 			"Resources\\fortniteRight.png","Resources\\gokuRight.png","Resources\\rossRight.png",
-			"Resources\\danielRight.png","Resources\\jonseyRight.png"};
+			"Resources\\jonseyRight.png", "Resources\\danielRight.png"};
 	
-	String[] skinsCounter = {"Resources\\jumperFacingLeft.png","Resources\\genshinBobblerLeft.png",
-			"Resources\\bobbletteLeft.png","Resources\\ninjaLeft.png","Resources\\puritanLeft.png",
+	String[] skinsCounter = {"Resources\\jumperFacingLeft.png", "Resources\\bobbletteLeft.png",
+			"Resources\\genshinBobblerLeft.png",
+			"Resources\\ninjaLeft.png","Resources\\puritanLeft.png",
 			"Resources\\fortniteLeft.png","Resources\\gokuLeft.png","Resources\\rossLeft.png",
-			"Resources\\danielLeft.png","Resources\\jonseyLeft.png"};
+			"Resources\\jonseyLeft.png", "Resources\\danielLeft.png"};
 	
+	boolean[] skinsUnlocked = {true, false, false, false, false, false, false, false, false, false};
+	int[] skinPrices = {0, 10, 30, 50, 100, 150, 200, 300, 400, 500};
+	int freeCash = 0;
 	
 	Rectangle[] buttons;
 	
@@ -86,6 +96,13 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         updatePlatforms();
+        
+        if(timer == 0) {
+        	writeToFile();
+        	timer = 1000;
+        }
+        timer--;
+        
  
         frames++;
         drawBackground(g);
@@ -282,6 +299,14 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 			tx = AffineTransform.getTranslateInstance(buttons[i].getX(), buttons[i].getY());
 	        Sprite = getImage(skins[i]);
 			g2.drawImage(Sprite, tx, null);
+			if(!skinsUnlocked[i]) {
+				tx = AffineTransform.getTranslateInstance(buttons[i].getX()-5, buttons[i].getY());
+				Sprite = getImage("Resources\\lock.png");
+				g2.drawImage(Sprite, tx, null);
+				g2.setColor(Color.black);
+				g2.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 20));
+				g2.drawString("" + skinPrices[i], (int)buttons[i].getX()+15, (int)buttons[i].getY()+80);
+			}
 		}
 		
 		for (int i = 0; i < buttons.length;i++) {
@@ -403,6 +428,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		writeToFile();
 		// TODO Auto-generated method stub
 		
 	}
@@ -418,7 +444,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	//*************************************
 	
 	Timer t;
-	String[] JFrameNames = {"Doodle Jump","Doodle Jumpero"};
+	String[] JFrameNames = {"Bobble Bounce","Doodle Jumpero"};
 	
 	
 	//*************************************
@@ -535,7 +561,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	
 	
 	public Main() {
-    	
+
+		readFromFile();
         JFrame f = new JFrame(JFrameNames[(int) (Math.random()*JFrameNames.length)]);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setSize(600,1000);
@@ -580,6 +607,40 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
     public boolean prophatGenerate() {
     	return Math.random() >= 0.98;
     }
+    
+    public boolean readFromFile() {
+    	try {
+			Scanner scanner = new Scanner(new File("save.sav"));
+			freeCash = scanner.nextInt();
+			for(int i = 0; i < skins.length; i++) {
+				if(scanner.nextInt() == 1) skinsUnlocked[i] = true;
+			}
+			return true;
+		} catch (FileNotFoundException e) {
+			System.out.println("Can't read from file!");
+			return false;
+		}
+    }
+    
+    public boolean writeToFile() {
+    	try {
+			FileWriter fw = new FileWriter("save.sav");
+			
+			//write the money amount
+			fw.write(freeCash + "\n");
+			//write the skins unlocked
+			for(int i = 0; i < skins.length; i++) {
+				if(skinsUnlocked[i]) fw.write("1 ");
+				else fw.write("0 ");
+			}
+			fw.close();
+			return true;
+		} catch (IOException e) {
+			System.out.println("Can't write to file!");
+			return false;
+		}
+    }
+    
 }
 
 class Background {
