@@ -201,6 +201,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		if (mouse.intersects(button) && mouseDown) {
 			mouseDown = false;
 			menu = "MAIN";
+			freeCash += calculateScore()/100;
 		}
 		
 	}
@@ -282,7 +283,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	public void moneyLoop(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		
-		tx = AffineTransform.getTranslateInstance(400,50);
+		tx = AffineTransform.getTranslateInstance(400,12);
         Sprite = getImage("Resources\\coin.gif");
     	g2.drawImage(Sprite, tx, null);
 		
@@ -291,7 +292,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         
         if (frames > 1000) frames = 0;
 		g.setColor(new Color(255,255,255));;
-		g.drawString(freeCash+"", 10,30);
+		g.drawString(freeCash+"", 440,40);
 	}
 	
 	public void skinLoop(Graphics g) { // Main menu code 
@@ -331,6 +332,12 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 				menu = "MAIN";
 				skinLeft = skinsCounter[i];
 				skinRight = skins[i];
+			}
+			if (mouse.intersects(buttons[i]) && mouseDown && !skinsUnlocked[i]) {
+				if (freeCash >= skinPrices[i]) {
+					skinsUnlocked[i] = true;
+					freeCash -= skinPrices[i];
+				}
 			}
 		}
 		
