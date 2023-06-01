@@ -69,11 +69,15 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	private String skinRight = "Resources\\jumperFacingRight.png";
 	private String skinLeft = "Resources\\jumperFacingLeft.png";
 			
+	static AudioPlayer musico;
+	static AudioPlayer shop;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Thread musico = new Thread(new AudioPlayer(".\\src\\Sounds\\Musico.wav", true));
-		musico.start();
+		musico = new AudioPlayer(".\\src\\Sounds\\Musico.wav", true);
+		shop = new AudioPlayer(".\\src\\Sounds\\shop.wav", true);
+		Thread music = new Thread(musico);
+		music.start();
 		new Main();
 		
 	}
@@ -165,6 +169,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		
 		if (mouse.intersects(skinButton) && mouseDown) {
 			mouseDown = false;
+			musico.stopMusic();
+			Thread music = new Thread(shop);
+			music.start();
 			menu = "SKIN";
 		}
 		
@@ -293,6 +300,9 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		if (mouse.intersects(menuButton) && mouseDown) {
 			mouseDown = false;
 			menu = "MAIN";
+			shop.stopMusic();
+			Thread music = new Thread(musico);
+			music.start();
 		}
 		
 		for (int i = 0; i < skins.length;i++) {
@@ -428,8 +438,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		writeToFile();
-		// TODO Auto-generated method stub
+
 		
 	}
 

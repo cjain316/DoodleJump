@@ -5,18 +5,25 @@ import java.io.IOException;
 public class AudioPlayer implements LineListener, Runnable{
 	boolean playCompleted;
 	boolean loop;
+	boolean stop;
 	String path;
 	
 	public AudioPlayer(String path, boolean loop) {
 		//playCompleted = true;
 		this.loop = loop;
 		this.path = path;
+		stop = false;
 	}
 	
 	public void run() {
+		stop = false;
 		do {
 			play(path);
-		} while(loop);
+		} while(loop && !stop);
+	}
+	
+	public void stopMusic() {
+		stop = true;
 	}
 	
 	void play(String audioFilePath) {
@@ -38,12 +45,12 @@ public class AudioPlayer implements LineListener, Runnable{
             audioClip.start();
             playCompleted = false;
             
-            while (!playCompleted) {
+            while (!playCompleted && !stop) {
                 // wait for the playback completes
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+                    break;
                 }
             }
              
