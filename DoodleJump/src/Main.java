@@ -120,6 +120,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		drawOverlay(g);
 		
 		if (menu.equals("GAME") || menu.equals("DEAD")) scoreLoop(g);
+        moneyLoop(g);
 	}
 	
 	
@@ -207,6 +208,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		if (mouse.intersects(button) && mouseDown) {
 			mouseDown = false;
 			menu = "MAIN";
+			freeCash += calculateScore()/100;
 		}
 		
 	}
@@ -285,6 +287,21 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		prevScore = a;
 	}
 	
+	public void moneyLoop(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		
+		tx = AffineTransform.getTranslateInstance(400,12);
+        Sprite = getImage("Resources\\coin.gif");
+    	g2.drawImage(Sprite, tx, null);
+		
+		font = new Font(Font.DIALOG_INPUT, Font.BOLD, 32);
+		g.setFont(font);
+        
+        if (frames > 1000) frames = 0;
+		g.setColor(new Color(255,255,255));;
+		g.drawString(freeCash+"", 440,40);
+	}
+	
 	public void skinLoop(Graphics g) { // Main menu code 
 		boolean showClickBoxes = false;
 		
@@ -320,11 +337,17 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		}
 		
 		for (int i = 0; i < buttons.length;i++) {
-			if (mouse.intersects(buttons[i]) && mouseDown) {
+			if (mouse.intersects(buttons[i]) && mouseDown && skinsUnlocked[i]) {
 				mouseDown = false;
 				menu = "MAIN";
 				skinLeft = skinsCounter[i];
 				skinRight = skins[i];
+			}
+			if (mouse.intersects(buttons[i]) && mouseDown && !skinsUnlocked[i]) {
+				if (freeCash >= skinPrices[i]) {
+					skinsUnlocked[i] = true;
+					freeCash -= skinPrices[i];
+				}
 			}
 		}
 		
