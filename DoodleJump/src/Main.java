@@ -302,6 +302,12 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		g.drawString(freeCash+"", 440,40);
 	}
 	
+	public void toggleMusic() {
+		shop.stopMusic();
+		Thread music = new Thread(musico);
+		music.start();
+	}
+	
 	public void skinLoop(Graphics g) { // Main menu code 
 		boolean showClickBoxes = false;
 		
@@ -317,9 +323,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		if (mouse.intersects(menuButton) && mouseDown) {
 			mouseDown = false;
 			menu = "MAIN";
-			shop.stopMusic();
-			Thread music = new Thread(musico);
-			music.start();
+			toggleMusic();
 		}
 		
 		for (int i = 0; i < skins.length;i++) {
@@ -342,11 +346,12 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 				menu = "MAIN";
 				skinLeft = skinsCounter[i];
 				skinRight = skins[i];
-			}
-			if (mouse.intersects(buttons[i]) && mouseDown && !skinsUnlocked[i]) {
+				toggleMusic();
+			} else if (mouse.intersects(buttons[i]) && mouseDown && !skinsUnlocked[i]) {
 				if (freeCash >= skinPrices[i]) {
 					skinsUnlocked[i] = true;
 					freeCash -= skinPrices[i];
+					toggleMusic();
 				}
 			}
 		}
