@@ -23,30 +23,27 @@ import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.*;
 import java.io.*;
-
+import java.util.Deque;
+import java.util.ArrayDeque;
 public class Main extends JPanel implements KeyListener, ActionListener, MouseListener {
-	private Player player = new Player();
-	private int prevX;
-	private ArrayList<Platform> platforms = new ArrayList<Platform>();
 	
+	private Player player = new Player();
+	private Deque<Platform> platforms = new ArrayDeque<Platform>();
 	private Image Sprite;
 	private AffineTransform tx;
 	private Font font = new Font(Font.DIALOG_INPUT, Font.BOLD, 32);
-	
 	private boolean mouseDown;
-	
+	private String menu = "MAIN";
+	private Point point;
+	public  int playerPos;
+	public  int ScreenPos;
+	public  int timer = 1000;
 	private int frames;
 	private int prevScore = calculateScore();
+	private int prevX;
 	
-	private String menu = "MAIN";
-	
-	
-	int timer = 1000;
-	
-	private Point point;
-	
-	public int playerPos;
-	public int ScreenPos;
+	Timer t;
+	String[] JFrameNames = {"Bobble Bounce","Doodle Jumpero"};
 	
 	String[] skins = {"Resources\\jumperFacingRight.png", "Resources\\bobbletteRight.png",
 			"Resources\\genshinBobblerRight.png",
@@ -82,6 +79,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		
 	}
 	
+	//adds hitboxes for the skins on the skin screen
 	public void parseButtons() {
 		int x = 50;
 		int y = 80;
@@ -96,6 +94,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		}
 	}
 	
+	//paint method
 	public void paint(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -107,7 +106,6 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         }
         timer--;
         
- 
         frames++;
         drawBackground(g);
         mouseLoop(g);
@@ -137,7 +135,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         
 	}
 	
-	public void menuLoop(Graphics g) { // Main menu code 
+	//loop for displaying the main menu
+	public void menuLoop(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		
 		Rectangle mouse = new Rectangle((int)point.getX(),(int)point.getY(),2,2);
@@ -161,7 +160,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		if (mouse.intersects(button) && mouseDown) {
 			mouseDown = false;
 			menu = "GAME";
-			platforms.add(new Platform(-10,300,false,false,false,false));
+			platforms.addLast(new Platform(-10,-10,false,false,false,false));
 			reset();
 			for (int i = 0; i < 10; i++) {
 				generatePlatforms();
@@ -178,7 +177,8 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		
 	}
 	
-	public void deadLoop(Graphics g) { // Main menu code 
+	//loop for the death screen
+	public void deadLoop(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		
 		Rectangle mouse = new Rectangle((int)point.getX(),(int)point.getY(),2,2);
@@ -213,9 +213,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		
 	}
 	
+	
+	//main loop for actually playying the game
 	public void gameLoop(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		
 		prevX = player.getX();
         player.setVy(player.getVy()-1);
         player.update(point);
@@ -227,7 +228,6 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         if (player.getFacing().equals("Left")) {Sprite = getImage(skinLeft);}
         else {Sprite = getImage(skinRight);}
     	g2.drawImage(Sprite, tx, null);
-    	
     	if (player.getJetpack()) {
     
             if (player.getFacing().equals("Left")) {
@@ -254,28 +254,93 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         	g2.drawImage(Sprite, tx, null);
     	}
         
-        for (int i = 0; i < platforms.size();i++) { //platforms
-			platforms.get(i).paint(g,false,player);
+    	ArrayDeque<Platform> dequeue = new ArrayDeque<Platform>();
+    	
+    	while(platforms.size() > 0) { //platforms
+        	platforms.peekFirst().paint(g,false,player);
 			
-			if (colliding(platforms.get(i),player) && player.getVy() < 0) {
-				if (platforms.get(i).getSpring()) {
+			if (colliding(platforms.peekFirst(),player) && player.getVy() < 0) {
+				if (platforms.peekFirst().getSpring()) {
 					springFunction();
-				} if (platforms.get(i).getTrampoline()){
+				} if (platforms.peekFirst().getTrampoline()){
 					trampolineFunction();
-				} if (platforms.get(i).getJetpack()) {
-					jetpackFunction(platforms.get(i));
-				} if (platforms.get(i).getProphat()) {
-					prophatFunction(platforms.get(i));
-				} if (!platforms.get(i).hasAttribute()) {
+				} if (platforms.peekFirst().getJetpack()) {
+					jetpackFunction(platforms.peekFirst());
+				} if (platforms.peekFirst().getProphat()) {
+					prophatFunction(platforms.peekFirst());
+				} if (!platforms.peekFirst().hasAttribute()) {
 					player.setVy(25);
 				}
 			}
+			
+			dequeue.addLast(platforms.removeFirst());
 		}
+    	platforms = dequeue;
         
         checkDead();
         
 	}
 	
+	//loop for the skin menu
+		public void skinLoop(Graphics g) {
+			boolean showClickBoxes = false;
+			
+			Graphics2D g2 = (Graphics2D) g;
+			
+			Rectangle mouse = new Rectangle((int)point.getX()+28,(int)point.getY(),2,2);
+			Rectangle menuButton = new Rectangle(475,900,100,50);
+			
+			tx = AffineTransform.getTranslateInstance(475, 900);
+	        Sprite = getImage("Resources\\menuButtonSkin.png");
+			g2.drawImage(Sprite, tx, null);
+			
+			if (mouse.intersects(menuButton) && mouseDown) {
+				mouseDown = false;
+				menu = "MAIN";
+				toggleMusic();
+			}
+			
+			for (int i = 0; i < skins.length;i++) {
+				tx = AffineTransform.getTranslateInstance(buttons[i].getX(), buttons[i].getY());
+		        Sprite = getImage(skins[i]);
+				g2.drawImage(Sprite, tx, null);
+				if(!skinsUnlocked[i]) {
+					tx = AffineTransform.getTranslateInstance(buttons[i].getX()-5, buttons[i].getY());
+					Sprite = getImage("Resources\\lock.png");
+					g2.drawImage(Sprite, tx, null);
+					g2.setColor(Color.black);
+					g2.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 20));
+					g2.drawString("" + skinPrices[i], (int)buttons[i].getX()+15, (int)buttons[i].getY()+80);
+				}
+			}
+			
+			for (int i = 0; i < buttons.length;i++) {
+				if (mouse.intersects(buttons[i]) && mouseDown && skinsUnlocked[i]) {
+					mouseDown = false;
+					menu = "MAIN";
+					skinLeft = skinsCounter[i];
+					skinRight = skins[i];
+					toggleMusic();
+				} else if (mouse.intersects(buttons[i]) && mouseDown && !skinsUnlocked[i]) {
+					if (freeCash >= skinPrices[i]) {
+						skinsUnlocked[i] = true;
+						freeCash -= skinPrices[i];
+						toggleMusic();
+					}
+				}
+			}
+			
+			if (showClickBoxes) {
+				for (int i = 0; i < buttons.length; i++) {
+					g.setColor(Color.BLACK);
+					g.drawRect((int)buttons[i].getX(),(int)buttons[i].getY(),(int)buttons[i].getWidth(),(int)buttons[i].getHeight());
+					g.drawRect((int)mouse.getX(),(int)mouse.getY(),(int)mouse.getWidth(),(int)mouse.getHeight());
+				}
+			}
+		}
+		
+	
+	//Draws the players score to the screen
 	public void scoreLoop(Graphics g) {
 		font = new Font(Font.DIALOG_INPUT, Font.BOLD, 32);
 		g.setFont(font);
@@ -287,6 +352,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		prevScore = a;
 	}
 	
+	//Draws the player's money to the screen
 	public void moneyLoop(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		
@@ -302,72 +368,10 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		g.drawString(freeCash+"", 440,40);
 	}
 	
-	public void toggleMusic() {
-		shop.stopMusic();
-		Thread music = new Thread(musico);
-		music.start();
-	}
 	
-	public void skinLoop(Graphics g) { // Main menu code 
-		boolean showClickBoxes = false;
-		
-		Graphics2D g2 = (Graphics2D) g;
-		
-		Rectangle mouse = new Rectangle((int)point.getX()+28,(int)point.getY(),2,2);
-		Rectangle menuButton = new Rectangle(475,900,100,50);
-		
-		tx = AffineTransform.getTranslateInstance(475, 900);
-        Sprite = getImage("Resources\\menuButtonSkin.png");
-		g2.drawImage(Sprite, tx, null);
-		
-		if (mouse.intersects(menuButton) && mouseDown) {
-			mouseDown = false;
-			menu = "MAIN";
-			toggleMusic();
-		}
-		
-		for (int i = 0; i < skins.length;i++) {
-			tx = AffineTransform.getTranslateInstance(buttons[i].getX(), buttons[i].getY());
-	        Sprite = getImage(skins[i]);
-			g2.drawImage(Sprite, tx, null);
-			if(!skinsUnlocked[i]) {
-				tx = AffineTransform.getTranslateInstance(buttons[i].getX()-5, buttons[i].getY());
-				Sprite = getImage("Resources\\lock.png");
-				g2.drawImage(Sprite, tx, null);
-				g2.setColor(Color.black);
-				g2.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 20));
-				g2.drawString("" + skinPrices[i], (int)buttons[i].getX()+15, (int)buttons[i].getY()+80);
-			}
-		}
-		
-		for (int i = 0; i < buttons.length;i++) {
-			if (mouse.intersects(buttons[i]) && mouseDown && skinsUnlocked[i]) {
-				mouseDown = false;
-				menu = "MAIN";
-				skinLeft = skinsCounter[i];
-				skinRight = skins[i];
-				toggleMusic();
-			} else if (mouse.intersects(buttons[i]) && mouseDown && !skinsUnlocked[i]) {
-				if (freeCash >= skinPrices[i]) {
-					skinsUnlocked[i] = true;
-					freeCash -= skinPrices[i];
-					toggleMusic();
-				}
-			}
-		}
-		
-		if (showClickBoxes) {
-			for (int i = 0; i < buttons.length; i++) {
-				g.setColor(Color.BLACK);
-				g.drawRect((int)buttons[i].getX(),(int)buttons[i].getY(),(int)buttons[i].getWidth(),(int)buttons[i].getHeight());
-				g.drawRect((int)mouse.getX(),(int)mouse.getY(),(int)mouse.getWidth(),(int)mouse.getHeight());
-			}
-		}
-	}
 	
 	
 	//Drawing outlines
-	
 	public void drawBackground(Graphics g) {
 		g.setColor(new Color(209, 197, 33));
 		g.fillRect(0,0,2000,2000);
@@ -384,22 +388,22 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		g.fillRect(0,0,2000,61);
 	}
 	
-	//End of section
+	/******************************************/
 	
 	
-	//Helper methods
+	//collision detection
 	public boolean colliding(Platform b, Player p) {
     	return b.getHitbox().intersects(p.getHitbox());
     }
 	
+	//calculates the score
 	public int calculateScore() {
 		int score = player.getY()/10; 
-		
-		
 		if (prevScore < score) return score;
 		else return prevScore;
 	}
 	
+	//resets the game
 	public void reset() {
 		player.setY(0);
 		player.setVy(25);
@@ -407,7 +411,7 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		player.maxHeight = 0;
 		player.height = 0;
 		while (platforms.size() > 0) {
-			platforms.remove(0);
+			platforms.removeFirst();
 		}
 	}
 	
@@ -418,138 +422,43 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	//*        Controls        *
 	//**************************
 	
-	
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		//System.out.println("Mouse down");
-		mouseDown = true;
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		//System.out.println("Mouse up");
-		mouseDown = false;
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		repaint();
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-
-		
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	//*************************************
-	//*************************************
-	//*************************************
-	
-	Timer t;
-	String[] JFrameNames = {"Bobble Bounce","Doodle Jumpero"};
+	public void mouseClicked(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {mouseDown = true;}
+	public void mouseReleased(MouseEvent e) {mouseDown = false;}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+	public void actionPerformed(ActionEvent e) {repaint();}
+	public void keyTyped(KeyEvent e) {}
+	public void keyPressed(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) {}
 	
 	
 	//*************************************
 	//*        Platform Generation        *
 	//*************************************
 	
-	
-	public void unloadUnusedPlatformsL() {
-		int i = 0;
-		while (i < platforms.size()) {
-			if (600+platforms.get(i).getY()+player.getY() > 1500) {
-				platforms.remove(i);
-			} else {
-				i++;
-			}
-		}
-	}
-	
+	//unload platforms that are off the screen
 	public void unloadUnusedPlatformsU() {
-		int i = 0;
-		while (i < platforms.size()) {
-			if (platforms.get(i).getY()*-1-(player.getY()+1000) > 1500) {
-				platforms.remove(i);
-			} else {
-				i++;
-			}
+		
+		while (!platforms.isEmpty() && (player.maxHeight - platforms.peekFirst().getY()) > 1500)
+		{
+			platforms.removeFirst();
 		}
 	}
 	
-	public int getHighestPlatform() { // returns the INDEX of the highest platform
-		if (platforms.size() == 0) return 0;
-		Platform highest = platforms.get(0);
-		int index = 0;
-		for (int i = 0; i < platforms.size();i++) {
-			if (platforms.get(i).getY() < highest.getY()) {
-				highest = platforms.get(i);
-				index = i;
-			}
-		}
-		return index;
-	}
-	
-	public int getLowestPlatform() {
-		Platform lowest = platforms.get(0);
-		int index = 0;
-		for (int i = 0; i > platforms.size();i++) {
-			if (platforms.get(i).getY() < lowest.getY()) {
-				lowest = platforms.get(i);
-				index = i;
-			}
-		}
-		return index;
-	}
-	
+	//generate platforms if the highest platform is too low
 	public void generatePlatforms() {
-		if (platforms.size() == 0) platforms.add(new Platform(-10,300,false,false,false,false));
-		int y = player.getY()+600;
-		int h = getHighestPlatform();
-		//System.out.println("Highest: " + platforms.get(h).getY() + "\nPlayer: " + y);
-		if (platforms.get(h).getY() < (y+1000)) {
-			platforms.add(new Platform((int)(Math.random()*530),platforms.get(h).getY()-100,
+		if (platforms.size() == 0) platforms.addLast(new Platform(0,-10,false,false,false,false));
+		int y = player.maxHeight+600;
+		while (platforms.peekLast().getY() < (y+2000)) {
+			platforms.addLast(new Platform((int)(Math.random()*530),platforms.peekLast().getY()+100,
 					springGenerate(),trampGenerate(),jetpackGenerate(),prophatGenerate()));
 		}
 	}
 	
 	
 	//*************************************
-	//*************************************
+	//*        Power up Grabbing          *
 	//*************************************
 	public void springFunction() {
 		player.setVy(50);
@@ -577,15 +486,16 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		prophat.start();
 	}
 	
-	
+	//adds platforms when needed and unloads platforms that are not visible
 	public void updatePlatforms() {
 		if (frames%2==0) {
 			generatePlatforms();
-			unloadUnusedPlatformsL();
 			unloadUnusedPlatformsU();
 		}
 	}
 	
+	
+	//Checks if the player is out of the screen range
 	public void checkDead() {
 		if (600 + player.maxHeight - player.height >=1000 && menu.equals("GAME")) {
 			menu = "DEAD";
@@ -598,17 +508,14 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 	
 	
 	public Main() {
-
 		readFromFile();
         JFrame f = new JFrame(JFrameNames[(int) (Math.random()*JFrameNames.length)]);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setSize(600,1000);
-
         f.add(this);
         f.addMouseListener(this);
         f.addKeyListener(this);
         f.setResizable(false);
-        //f.setExtendedState(JFrame.MAXIMIZED_BOTH); 
         
         t = new Timer(1, this);
         t.start();
@@ -617,33 +524,14 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
         player.setY(0);
         parseButtons();
     }
-	
-	private void update() {
-
-    }
     
-    protected Image getImage(String path) {
-
-        Image tempImage = null;
-        try {
-            URL imageURL = Background.class.getResource(path);
-            tempImage    = Toolkit.getDefaultToolkit().getImage(imageURL);
-        } catch (Exception e) {e.printStackTrace();}
-        return tempImage;
-    }
     
-    public boolean springGenerate() {
-    	return Math.random() >= 0.95;
-    }
-    public boolean trampGenerate() {
-    	return Math.random() >= 0.98;
-    }
-    public boolean jetpackGenerate() {
-    	return Math.random() >= 0.995;
-    }
-    public boolean prophatGenerate() {
-    	return Math.random() >= 0.98;
-    }
+    
+    public boolean springGenerate()  {return Math.random() >=  0.95;}
+    public boolean trampGenerate()   {return Math.random() >=  0.98;}
+    public boolean jetpackGenerate() {return Math.random() >= 0.995;}
+    public boolean prophatGenerate() {return Math.random() >=  0.98;}
+    
     
     public boolean readFromFile() {
     	try {
@@ -678,8 +566,20 @@ public class Main extends JPanel implements KeyListener, ActionListener, MouseLi
 		}
     }
     
-}
+    public void toggleMusic() {
+		shop.stopMusic();
+		Thread music = new Thread(musico);
+		music.start();
+	}
+    
+    protected Image getImage(String path) {
 
-class Background {
-	
+        Image tempImage = null;
+        try {
+            URL imageURL = Main.class.getResource(path);
+            tempImage    = Toolkit.getDefaultToolkit().getImage(imageURL);
+        } catch (Exception e) {e.printStackTrace();}
+        return tempImage;
+    }
+    
 }

@@ -57,36 +57,36 @@ public class Platform {
 	public boolean getProphat() {return hasProphat;}
 	
 	public void update(Player p) {
-		hitbox.setLocation(x,y+p.maxHeight+600);
+		hitbox.setLocation(x,p.maxHeight-y+600);
 	}
 	
 	public void paint(Graphics g, boolean hitboxes, Player p) {
 		Graphics2D g2 = (Graphics2D) g;
 		update(p);
-		tx = AffineTransform.getTranslateInstance(x, y+p.maxHeight+600);
+		tx = AffineTransform.getTranslateInstance(x, p.maxHeight-y+600);
 		Sprite = getImage("Resources\\\\platformBreakable.png");
 		g2.drawImage(Sprite, tx, null);
 		
 		if (hasSpring) {
-			tx = AffineTransform.getTranslateInstance(x+22, y+p.maxHeight+600-24);
+			tx = AffineTransform.getTranslateInstance(x+22, p.maxHeight-y+600-24);
 			Sprite = getImage("Resources\\\\spring.png");
 			g2.drawImage(Sprite, tx, null);
 		}
 		
 		if (hasTrampoline) {
-			tx = AffineTransform.getTranslateInstance(x, y+p.maxHeight+600-16);
+			tx = AffineTransform.getTranslateInstance(x, p.maxHeight-y+600-16);
 			Sprite = getImage("Resources\\\\trampoline.png");
 			g2.drawImage(Sprite, tx, null);
 		}
 		
 		if (hasJetpack) {
-			tx = AffineTransform.getTranslateInstance(x+31, y+p.maxHeight+600-42);
+			tx = AffineTransform.getTranslateInstance(x+31, p.maxHeight-y+600-42);
 			Sprite = getImage("Resources\\\\jetpack_Item.png");
 			g2.drawImage(Sprite, tx, null);
 		}
 		
 		if (hasProphat) {
-			tx = AffineTransform.getTranslateInstance(x+20, y+p.maxHeight+600-30);
+			tx = AffineTransform.getTranslateInstance(x+20, p.maxHeight-y+600-30);
 			Sprite = getImage("Resources\\\\prophat.png");
 			g2.drawImage(Sprite, tx, null);
 		}
@@ -102,7 +102,7 @@ public class Platform {
 
         Image tempImage = null;
         try {
-            URL imageURL = Background.class.getResource(path);
+            URL imageURL = Platform.class.getResource(path);
             tempImage    = Toolkit.getDefaultToolkit().getImage(imageURL);
         } catch (Exception e) {e.printStackTrace();}
         return tempImage;
